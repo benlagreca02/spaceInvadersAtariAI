@@ -3,11 +3,12 @@
 
 from Xlib import display
 from PIL import Image
+import numpy as np
 
 
 # ASSUMES YOU'RE USING AN EMULATOR THAT USES AN X11 BASED DISPLAY
 class ScreenRipper:
-    def __init__(self, expectedWinTitle):
+    def __init__(self, expected_window_title):
         disp = display.Display()
         self.root = disp.screen().root
 
@@ -19,12 +20,12 @@ class ScreenRipper:
         for window_id in window_ids:
             self.window = disp.create_resource_object('window', window_id)
             window_title = self.window.get_wm_name()
-            if window_title and window_title == expectedWinTitle:
+            if window_title and window_title == expected_window_title:
                 window_id_to_capture = window_id
                 break
 
         if self.window is None:
-            Exception("BALLS")
+            Exception(f"Couldn't find window with name {expected_window_title}")
 
     def get_screen(self):
         # Loop this?
@@ -37,4 +38,4 @@ class ScreenRipper:
         xwd_image = self.window.get_image(x, y, width, height, display.X.ZPixmap, 0xffffffff)
         img_dat = xwd_image.data
         # might not need?
-        return Image.frombytes("RGB", (width, height), img_dat, "raw", "BGRX")
+        return np.asarray(Image.frombytes("RGB", (width, height), img_dat, "raw", "RGBX"))
