@@ -9,6 +9,8 @@ import cv2
 import cv2 as cv
 import argparse
 
+from utils import ColorBounds
+
 max_value = 255
 max_value_H = 360 // 2
 low_H = 0
@@ -25,9 +27,11 @@ low_V_name = 'Low V'
 high_H_name = 'High H'
 high_S_name = 'High S'
 high_V_name = 'High V'
-k_size_name = 'Kernel Dimensions'
+k_size_x_name = 'Kernel X Dimension'
+k_size_y_name = 'Kernel Y Dimension'
 sigma_x_name = 'sigmaX'
-k_size = 1
+k_size_x = 1
+k_size_y = 1
 sigma_x = 0
 
 
@@ -78,11 +82,17 @@ def on_high_V_thresh_trackbar(val):
     high_V = max(high_V, low_V + 1)
     cv.setTrackbarPos(high_V_name, window_detection_name, high_V)
 
-def on_k_size_trackbar(val):
-    global k_size
+def on_k_size_x_trackbar(val):
+    global k_size_x
     # guarantee the number is odd
-    k_size = (val + 1) % 2 + val
-    cv.setTrackbarPos(k_size_name, window_detection_name, k_size)
+    k_size_x = (val + 1) % 2 + val
+    cv.setTrackbarPos(k_size_x_name, window_detection_name, k_size_x)
+
+def on_k_size_y_trackbar(val):
+    global k_size_y
+    # guarantee the number is odd
+    k_size_y = (val + 1) % 2 + val
+    cv.setTrackbarPos(k_size_y_name, window_detection_name, k_size_y)
 
 def on_sigma_x_trackbar(val):
     global sigma_x
@@ -92,7 +102,7 @@ def on_sigma_x_trackbar(val):
 # Iterates through some pictures saved in "testCaptures" folder and displays sliders for playing with
 # bounds for color masking
 
-if __name__ == "__main__":
+def init_windows():
     cv.namedWindow(window_capture_name)
     cv.namedWindow(window_detection_name)
     cv.createTrackbar(low_H_name, window_detection_name, low_H, max_value_H, on_low_H_thresh_trackbar)
@@ -102,19 +112,31 @@ if __name__ == "__main__":
     cv.createTrackbar(low_V_name, window_detection_name, low_V, max_value, on_low_V_thresh_trackbar)
     cv.createTrackbar(high_V_name, window_detection_name, high_V, max_value, on_high_V_thresh_trackbar)
     # could change max value if I felt like it
-    cv.createTrackbar(k_size_name, window_detection_name, k_size, max_value, on_k_size_trackbar)
+    cv.createTrackbar(k_size_x_name, window_detection_name, k_size_x, max_value, on_k_size_x_trackbar)
+    cv.createTrackbar(k_size_y_name, window_detection_name, k_size_y, max_value, on_k_size_y_trackbar)
     cv.createTrackbar(sigma_x_name, window_detection_name, sigma_x, max_value, on_sigma_x_trackbar)
 
-    pictures = []
-    start = 0
-    stop = 40
-    for i in range(start, stop):
-        pictures.append(cv.imread(f"testCaptures/{i}.png"))
+
+
+if __name__ == "__main__":
+
+    first_pic_num = 14
+    skip_by = 1
+    last_pic_num = 750
+
+    folder_name = "raw_screenshots"
+
+    init_windows()
 
     key = None
     while True:
 
-        for pic in pictures:
+        for i in range(first_pic_num, last_pic_num, skip_by):
+            pic = cv.imread(f"{folder_name}/{i}.png")
+            if pic is None:
+                continue
+
+            print(f"now showing picture {i}")
             # show base pic, only once per 'n'
             smol_pic = cv.resize(pic, (960, 540))
             cv.imshow(window_capture_name, smol_pic)
@@ -127,7 +149,7 @@ if __name__ == "__main__":
                 mask = cv.inRange(frame_hsv, (low_H, low_S, low_V), (high_H, high_S, high_V))
 
                 # blur the mask a little, must be odd!
-                mask = cv.GaussianBlur(mask, (k_size, k_size), sigma_x)
+                mask = cv.GaussianBlur(mask, (k_size_x, k_size_y), sigma_x)
 
                 # figure out where rectangles should go
                 contours = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -140,14 +162,14 @@ if __name__ == "__main__":
                     x, y, w, h = cv2.boundingRect(contour)
                     # cv2.rectangle(mask, (x,y), (x+w, y+h), (0,0,255), 2)
                     # if the box is too small, it's probably not an alien
-                    if w < 50 or h < 50:
+                    if w < ColorBounds.MIN_ALIEN_SIZE or h < ColorBounds.MIN_ALIEN_SIZE:
                         continue
                     cv2.rectangle(pic_with_boxes, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
                 smol_thresh = cv.resize(mask, (960, 540))
                 cv.imshow(window_detection_name, smol_thresh)
 
-                # redraw original pic, hopefully with rectangls
+                # redraw original pic, hopefully with rectangles
                 smol_pic = cv.resize(pic_with_boxes, (960, 540))
                 cv.imshow(window_capture_name, smol_pic)
 
@@ -159,21 +181,3 @@ if __name__ == "__main__":
                     exit(0)
                 else:
                     key = None
-
-    """
-    while True:
-
-        # I'm assuming 'ret' is a return code
-        ret, frame = cap.read()
-        if frame is None:
-            break
-        frame_HSV = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-        frame_threshold = cv.inRange(frame_HSV, (low_H, low_S, low_V), (high_H, high_S, high_V))
-
-        cv.imshow(window_capture_name, frame)
-        cv.imshow(window_detection_name, frame_threshold)
-
-        key = cv.waitKey(30)
-        if key == ord('q') or key == 27:
-            break
-    """
