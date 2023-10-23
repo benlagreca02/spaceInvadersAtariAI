@@ -48,7 +48,7 @@ if __name__ == "__main__":
     # could make these command line args, but this should only be run once in a blue moon to collect data to create
     # training data
     WINDOW_TITLE = "simple64    build: f7bab16"
-    screenshot_storage_directory = "raw_screenshots"
+    screenshot_storage_directory = "data/images"
     first_filenum = 0
     secs_between_screenshots = 2
     frequency_of_debug_prints = 15

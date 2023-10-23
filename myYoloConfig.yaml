@@ -1,0 +1,12 @@
+# dataset root dir
+path: /home/ben/projects/spaceInvaders64AI
+  
+  # training data
+train: images
+
+# data for evaluation
+val: images
+
+names:
+  0: blue_alien
+  1: yellow_alien

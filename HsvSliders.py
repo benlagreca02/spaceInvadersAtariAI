@@ -124,7 +124,7 @@ if __name__ == "__main__":
     skip_by = 1
     last_pic_num = 750
 
-    folder_name = "raw_screenshots"
+    folder_name = "data/images"
 
     init_windows()
 
