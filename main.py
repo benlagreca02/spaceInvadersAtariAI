@@ -22,7 +22,6 @@ def train(epoch_count):
 
 # manual test run, just iterate through a ton of pictures and try to label them
 def test(model_path):
-    model_path = ''
     model = ultralytics.YOLO(model_path)
     thresh = 0.3
     test_dir = 'data/test_images'
