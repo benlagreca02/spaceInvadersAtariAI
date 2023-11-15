@@ -88,4 +88,4 @@ if __name__ == "__main__":
     # very manual and 'hackish' tbh, but doesn't really matter right now
     # train(80)
     # test('runs/detect/rev2epoch80/weights/last.pt', 0.7)
-    test_on_video('runs/detect/rev2epoch80/weights/last.pt', 0.40, 'data/LongplayofSpaceInvaders.mp4')
+    test_on_video('runs/detect/rev2epoch80/weights/last.pt', 0.60, 'data/LongplayofSpaceInvaders.mp4')
