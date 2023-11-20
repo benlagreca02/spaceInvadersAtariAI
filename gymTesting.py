@@ -1,11 +1,8 @@
 import time
 
-import gymnasium as gym
 from stable_baselines3 import DQN, A2C
 # does all the nice wrapping and prettying up for us
 from stable_baselines3.common.env_util import make_atari_env
-from stable_baselines3.common.evaluation import evaluate_policy
-from stable_baselines3.common.vec_env import VecFrameStack
 
 if __name__ == '__main__':
 
@@ -16,8 +13,10 @@ if __name__ == '__main__':
     # docs say to use Cnn with image inputs
     DQN_POLICY = 'CnnPolicy'
     NUM_ENVS = 1
-    # this is the 'replay buffer' size
-    BUFFER_SIZE = 100_000
+
+    # this is the 'replay buffer' size, too large and we won't be able to
+    # instantiate the agent
+    BUFFER_SIZE = 500_000
 
     print(f"Making environment: {ENV_NAME}")
 
@@ -45,12 +44,3 @@ if __name__ == '__main__':
     # for evaluating
     # mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=10)
 
-    print("Enjoying the model...")
-    # "enjoy trained agent"
-    vec_env = model.get_env()
-    obs = vec_env.reset()
-    for _ in range(5000):
-        action, _state = model.predict(obs, deterministic=True)
-        obs, reward, done, info = vec_env.step(action)
-        vec_env.render("human")
-        time.sleep(0.1)
