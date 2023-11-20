@@ -6,7 +6,7 @@ from stable_baselines3.common.env_util import make_atari_env
 
 if __name__ == '__main__':
 
-    TOTAL_TIMESTEPS = 500_000
+    TOTAL_TIMESTEPS = 1_000_000
     ENV_NAME = 'ALE/SpaceInvaders-v5'
 
     # pick between MlpPolicy, CnnPolicy, and MultiInputPolicy
