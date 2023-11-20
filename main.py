@@ -14,8 +14,8 @@ def train(epoch_count):
 # manual test run, just iterate through a ton of pictures and try to label them
 def test(model_path, confidence_threshold):
     model = ultralytics.YOLO(model_path)
-    test_dir = 'data/test_images'
-    test_results_dir = 'data/test_results'
+    test_dir = 'data/manual_test_images'
+    test_results_dir = 'data/manual_test_results'
     test_picture_names = os.listdir(test_dir)
 
     for test_picture_name in test_picture_names:
