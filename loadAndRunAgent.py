@@ -7,7 +7,7 @@ ENV_NAME = 'ALE/SpaceInvaders-v5'
 
 TOTAL_TIMESTEPS = 1_000_000
 BUFFER_SIZE = 100_000
-VEC_STACK=12
+VEC_STACK=4
 
 # pick between MlpPolicy, CnnPolicy, and MultiInputPolicy
 # docs say to use Cnn with image inputs
@@ -16,12 +16,12 @@ DQN_POLICY = 'CnnPolicy'
 
 if __name__ == "__main__":
 
-    env = make_atari_env('SpaceInvadersNoFrameskip-v4', n_envs=NUM_ENVS)
+    env = make_atari_env('SpaceInvadersNoFrameskip-v4')
 
-    model = DQN.save(f'{DQN_POLICY}_ReplaySize{BUFFER_SIZE}_NumTimesteps{TOTAL_TIMESTEPS}_VecStack{VEC_STACK}', env=env)
+    model = DQN.load(f'{DQN_POLICY}_ReplaySize{BUFFER_SIZE}_NumTimesteps{TOTAL_TIMESTEPS}_VecStack{VEC_STACK}', env=env)
 
     vec_env = model.get_env()
-    obs=vec_env.reset()
+    obs = vec_env.reset()
     for _ in range(5000):
         action, _state = model.predict(obs, deterministic=True)
         obs, reward, done, info = vec_env.step(action)

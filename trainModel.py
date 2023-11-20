@@ -12,8 +12,10 @@ if __name__ == '__main__':
     DQN_POLICY = 'CnnPolicy'
 
     TOTAL_TIMESTEPS = 1_000_000
-    BUFFER_SIZE = 100_000  # if too large, can't allocate that much memory
-    VEC_STACK = 12
+
+    # if too large, can't allocate that much memory or get "devices doesn't have enough mem" warning
+    BUFFER_SIZE = 100_000
+    VEC_STACK = 4
 
     print(f"Making environment: {ENV_NAME}")
 
@@ -24,7 +26,7 @@ if __name__ == '__main__':
     # preprocessing on the env. to make it less data intensive
     env = make_atari_env('SpaceInvadersNoFrameskip-v4')
 
-    # I wonder if this will break anything
+    # not sure if I want to mess with this?
     env = VecFrameStack(env, n_stack=VEC_STACK)
 
     # instantiate agent
