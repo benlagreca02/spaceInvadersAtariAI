@@ -3,6 +3,8 @@ import time
 from stable_baselines3 import DQN, A2C
 # does all the nice wrapping and prettying up for us
 from stable_baselines3.common.env_util import make_atari_env
+from stable_baselines3.common.vec_env import VecFrameStack
+
 
 if __name__ == '__main__':
 
@@ -16,7 +18,7 @@ if __name__ == '__main__':
 
     # this is the 'replay buffer' size, too large and we won't be able to
     # instantiate the agent
-    BUFFER_SIZE = 500_000
+    BUFFER_SIZE = 100_000
 
     print(f"Making environment: {ENV_NAME}")
 
@@ -27,12 +29,15 @@ if __name__ == '__main__':
     # preprocessing on the env. to make it less data intensive
     env = make_atari_env('SpaceInvadersNoFrameskip-v4', n_envs=NUM_ENVS)
 
+    # I wonder if this will break anything
+    env = VecFrameStack(env, n_stack=12)
+
     # instantiate agent
     print("Instantiating agent")
 
     # default buffer size is 1_000_000 and that tries to allocate 93 GB
     # This is where 'hyperparameter tuning' will come into play seriously
-    model = DQN(DQN_POLICY, env, verbose=0, buffer_size=BUFFER_SIZE, )
+    model = DQN(DQN_POLICY, env, verbose=0, buffer_size=BUFFER_SIZE,device="cuda")
 
     # train the agent w/ prog. bar
     print("Training...")
