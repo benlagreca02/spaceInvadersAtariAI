@@ -1,7 +1,8 @@
 
 import time
-from stable_baselines3.common.env_util import make_atari_env
 from stable_baselines3 import DQN, A2C
+from stable_baselines3.common.env_util import make_atari_env
+from stable_baselines3.common.vec_env import VecFrameStack
 
 ENV_NAME = 'ALE/SpaceInvaders-v5'
 
@@ -17,6 +18,7 @@ DQN_POLICY = 'CnnPolicy'
 if __name__ == "__main__":
 
     env = make_atari_env('SpaceInvadersNoFrameskip-v4')
+    env = VecFrameStack(env, n_stack=VEC_STACK)
 
     model = DQN.load(f'{DQN_POLICY}_ReplaySize{BUFFER_SIZE}_NumTimesteps{TOTAL_TIMESTEPS}_VecStack{VEC_STACK}', env=env)
 
